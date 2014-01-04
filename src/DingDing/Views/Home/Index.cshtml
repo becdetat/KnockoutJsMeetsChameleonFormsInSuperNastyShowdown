@@ -1,7 +1,77 @@
-﻿@model dynamic
+﻿@model DingDing.Controllers.Api.Models.CharacterPostModel
 
 @{
-    ViewBag.Title = "Wowsa";
+    ViewBag.Title = "Ding ding";
 }
 
-<h2>Wowsa</h2>
+<h2>@ViewBag.Title</h2>
+
+<div class="row">
+    <p class="btn-toolbar pull-right">
+        <a class="btn btn-primary" data-bind="click: createNewCharacter">
+            <i class="glyphicon glyphicon-plus"></i> Create a new character
+        </a>
+    </p>
+</div>
+
+<table>
+    <tbody data-bind="foreach: characters">
+        <tr>
+            <td data-bind="text: name"></td>
+            <td>
+                <button data-bind="click: $root.startEditingCharacter"><i class="glyphicon glyphicon-edit"></i></button>
+                <button data-bind="click: $root.deleteCharacter"><i class="glyphicon glyphicon-remove"></i></button>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+@section script
+{
+    <script>
+        ko.applyBindings(new DingDing.Home.Index.ViewModel('/api/characters/'));
+    </script>
+}
+
+
+<div class="modal fade" data-bind="with: currentCharacter" id="currentCharacterModal">
+    <form class="modal-dialog" data-bind="submit: $root.saveEditedCharacter">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Edit character</h4>
+            </div>
+
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="characterName">Name</label>
+                    <input type="text" class="form-control" id="characterName" data-bind="value: name, valueUpdate: 'afterkeydown'" />
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bind="click: $root.cancelEditingCharacter">Cancel</button>
+                <button type="submit" class="btn btn-primary" data-bind="enable: (name() != '')">Save</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+@using (var f = Html.BeginChameleonForm())
+{
+    using (var s = f.BeginSection("Heading"))
+    {
+        @s.FieldFor(x => x.Name)
+        @s.FieldFor(x => x.Race)
+        @s.FieldFor(x => x.Class)
+        @s.FieldFor(x => x.Strength)
+        @s.FieldFor(x => x.Dexterity)
+        @s.FieldFor(x => x.Constitution)
+        @s.FieldFor(x => x.Intelligence)
+        @s.FieldFor(x => x.Wisdom)
+        @s.FieldFor(x => x.Charisma)
+    }
+    using (var n = f.BeginNavigation())
+    {
+        @n.Submit("Create")
+    }
+}
